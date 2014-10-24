@@ -1,0 +1,141 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <script type="text/javascript">
+        var socket = null;
+		
+		function connect()
+		{
+			socket = new WebSocket('ws://' + server.value + '/');
+			socket.onmessage = function(evt) { onMessage(evt) };
+			
+			socket.onopen = function() 
+			{
+				writeToScreen('<span class="system-message">Connection established.</span><br>');
+			};
+        
+			socket.onclose = function()
+			{
+				writeToScreen('<span class="system-message">Connection closed.</span><br>');
+			};
+			
+			socket.onerror = function(evt)
+			{
+				writeToScreen('<span class="system-message">' + evt + '</span><br>');
+			}
+		}
+		
+		function send()
+		{
+			var text = input.value;
+			writeToScreen('<span class="own-action">' + text + '</span><br>');
+			socket.send(text);
+			input.value = "";
+	    }
+		
+		function doaction(action)
+		{
+			writeToScreen('<span class="icon-action">' + action + '</span><br>');
+			socket.send(action);
+		}
+
+		function setverb(verb)
+		{
+			input.value = verb;
+		}
+
+		function append(txt)
+		{
+			input.value += txt;
+		}
+
+		function objectnameaction(name)
+		{
+			append(" " + name);
+		}
+		
+		function onMessage(evt)
+		{
+			var rest = evt.data;
+			rest = rest.replace(/\n/g, "<br>");
+			writeToScreen('<span class="server-message">' + rest +'</span>');
+		}
+		
+		function writeToScreen(message)
+		{
+			var pre = document.createElement("span");
+			pre.style.wordWrap = "break-word";
+			pre.innerHTML = message;
+			output.appendChild(pre);
+			output.scrollTop = output.scrollHeight;
+		}
+		
+		
+    </script>
+	
+	<style type="text/css">
+		.own-action { color: red; }
+		.icon-action { color: blue; }
+		.server-message { color: green; }
+		.system-message { color: gray; }
+		.verb-button { color: white; border-style: solid; border-color: gray; border: 2px; border-radius: 4px; margin: 4px; float: left;}
+		.verb-button:hover { border-color: red;}
+		.objectnamelink { color: olive;}
+		.objectnamelink:hover { color: gold;}
+		
+		body 
+		{
+			background-color: black;
+		}
+	</style>
+</head>
+<body>
+
+<div stule="position: fixed; left: 10px; top: 10px; right: 10px;">
+	<input name="connect" type="submit" value="connect" onclick="connect()">
+	<input name="server" id="server" type="text" style="width: 400px" value="72.209.212.88:8670">
+	<input name="clear" type="submit" value="clear output" onclick="while (output.hasChildNodes()) {output.removeChild(output.lastChild);}">
+</div>
+<div style="position: fixed; left: 10px; bottom: 55px; width: 100%; right: 10px;">
+	<input width="25px" name="submit" type="submit" value="send" onclick="send()">
+	<input type="text" style="width: 600px; right: 10px;" id="input" onkeydown="if (event.which == 13) { send(); return false; } else return true;">
+</div>
+<div id="output" style="position: absolute; left: 10px; top: 40px; right: 10px; bottom: 85px; padding: 4px; border-style: solid; overflow-x: hidden; overflow-y: scroll; border-color: gray; border-radius: 16px;">
+</div> 
+<div style="position: absolute; left: 10px; bottom: 5px; padding: 4px; width: 100px;">
+	<a class="objectnamelink" onclick="setverb('')">clear</a>
+</div>
+<div style="position: absolute; left: 110px; bottom: 5px; padding: 4px; width: 300px; border:0px; border-left: 1px; border-style: solid; border-color: gray;">
+	<a class="objectnamelink" onclick="setverb('look')">look</a>
+	<a class="objectnamelink" onclick="setverb('get')">get</a>
+	<a class="objectnamelink" onclick="setverb('drop')">drop</a>
+	<a class="objectnamelink" onclick="setverb('open')">open</a>
+	<a class="objectnamelink" onclick="setverb('close')">close</a>
+	<a class="objectnamelink" onclick="setverb('go')">go</a>
+	<a class="objectnamelink" onclick="setverb('wear')">wear</a>
+	<a class="objectnamelink" onclick="setverb('remove')">remove</a>
+	<a class="objectnamelink" onclick="setverb('say')">say</a>
+	<a class="objectnamelink" onclick="setverb('emote')">emote</a>
+	<a class="objectnamelink" onclick="setverb('sit')">sit</a>
+	<a class="objectnamelink" onclick="setverb('stand')">stand</a>
+</div>
+<div style="position: absolute; left: 410px; bottom: 5px; padding: 4px; width: 150px; border:0px; border-left: 1px; border-style: solid; border-color: gray;">
+	<a class="objectnamelink" onclick="append(' me')">me</a>
+	<a class="objectnamelink" onclick="append(' here')">here</a>
+	<a class="objectnamelink" onclick="append(' my')">my</a><br>
+	<a class="objectnamelink" onclick="append(' in')">in</a>
+	<a class="objectnamelink" onclick="append(' on')">on</a>
+	<a class="objectnamelink" onclick="append(' under')">under</a>
+	<a class="objectnamelink" onclick="append(' from')">from</a>
+</div>
+<div style="position: absolute; left: 560px; bottom: 5px; padding: 4px; width: 200px; border:0px; border-left: 1px; border-style: solid; border-color: gray;">
+	<a class="objectnamelink" onclick="setverb('verbs')">verbs</a>
+	<a class="objectnamelink" onclick="setverb('who')">who</a>
+	<a class="objectnamelink" onclick="setverb('channels')">channels</a>
+	<a class="objectnamelink" onclick="setverb('ooc')">ooc</a>
+	<a class="objectnamelink" onclick="setverb('subscribe')">subscribe</a>
+	<a class="objectnamelink" onclick="setverb('unsubscribe')">unsubscribe</a>
+</div>
+
+
+</body>
+</html>

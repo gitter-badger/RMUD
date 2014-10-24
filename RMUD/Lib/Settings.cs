@@ -11,6 +11,7 @@ namespace RMUD
 		public String MessageOfTheDay;
 
         public int TelnetPort = 8669;
+        public int WebsocketPort = 8670;
 
         public String NewPlayerStartRoom;
         public bool UpfrontCompilation = true;
@@ -44,10 +45,6 @@ namespace RMUD
             RankNames.Add(100, "equester");
             RankNames.Add(0, "proletarian");
             RankNames.Add(Int32.MinValue, "sentina");
-
-            Mud.ChatChannels.Add(new ChatChannel("OOC"));
-            Mud.ChatChannels.Add(new ChatChannel("SENATE", c => c.Rank >= 100));
-            Mud.ChatChannels.Add(new ChatChannel("HELP"));
         }
 
         public String GetNameForRank(int Rank)

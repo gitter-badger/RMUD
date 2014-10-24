@@ -30,6 +30,9 @@
     <StartupObject>RMUD.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Alchemy">
+      <HintPath>..\packages\Alchemy.2.2.1\lib\net40\Alchemy.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -45,6 +48,7 @@
     <Compile Include="Clients\Account.cs" />
     <Compile Include="Clients\ConfirmCommandHandler.cs" />
     <Compile Include="Clients\PasswordCommandHandler.cs" />
+    <Compile Include="Clients\WebsocketClient.cs" />
     <Compile Include="Commands\Save.cs" />
     <Compile Include="Commands\Purge.cs" />
     <Compile Include="Commands\Register.cs" />

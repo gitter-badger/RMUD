@@ -38,9 +38,53 @@ namespace RMUD
                 telnetListener = new TelnetClientSource();
                 telnetListener.Port = Mud.SettingsObject.TelnetPort;
                 telnetListener.Listen();
+                
+                var websocketListener = new Alchemy.WebSocketServer(Mud.SettingsObject.WebsocketPort, IPAddress.Any);
+                websocketListener.TimeOut = TimeSpan.FromMinutes(10);
+
+                websocketListener.OnConnected = (context) =>
+                {
+                    var client = new WebsocketClient();
+                    client.context = context;
+                    context.Data = client;
+                    if (Mud.ClientConnected(client) == Mud.ClientAcceptanceStatus.Rejected)
+                    {
+                        // ??? 
+                    }
+                    Console.WriteLine("New Websocket client.");
+                };
+
+                websocketListener.OnReceive = (context) =>
+                {
+                    Console.WriteLine("Data from websocket.");
+                    var data = context.DataFrame.AsRaw();
+                    var stringWriter = new StringWriter();
+                    foreach (var item in data)
+                        foreach (var letter in item.Array)
+                            stringWriter.Write((char)letter);
+                    Mud.EnqueuClientCommand(context.Data as Client, stringWriter.ToString());
+                };
+
+                websocketListener.OnDisconnect = (context) =>
+                {
+                    var client = context.Data as WebsocketClient;
+                    if (client != null)
+                    {
+                        client.context = null;
+                        context.Data = null;
+                        Console.WriteLine("Lost websocket client.");
+                        Mud.ClientDisconnected(client);
+                    }
+                    else
+                        Console.WriteLine("Dafuq?");
+                };
+
+                websocketListener.Start();
+                Console.WriteLine("Accepting web socket connections.");
             }
 
             if (Mud.SettingsObject.UseConsoleCommands)
+            #region Console Commands
             {
                 try
                 {
@@ -118,6 +162,7 @@ namespace RMUD
                 }
 
             }
+            #endregion
             else
             {
                 while (true) 
